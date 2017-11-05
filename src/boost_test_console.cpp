@@ -38,7 +38,6 @@ const char* g_hist_file = "./btc_history.hist";
 bool g_bin_loaded = false;
 
 std::string g_content;
-std::string g_labels;
 std::string g_bin_name;
 std::string g_prompt;
 std::string g_default_prompt = "test console >";
@@ -100,7 +99,8 @@ print_content (const std::string&)
 void
 print_labels (const std::string&)
 {
-    std::cout << g_labels << '\n';
+    for(const auto& label : g_label_vector)
+        std::cout << label << '\n';
 }
 
 void
@@ -134,14 +134,22 @@ open_last_full_log (const std::string&)
 bool
 exec_cmd (const std::string& cmd)
 {
+    size_t cmd_len = 0;
     const auto& cmd_info_it
         = std::find_if (
             g_command_info_vector.begin (),
             g_command_info_vector.end (),
-            [&cmd] (const cmd_info_t& c_info)
+            [&cmd,&cmd_len] (const cmd_info_t& c_info)
             {
-                if (0 == c_info._cmd.compare (0, c_info._cmd.size (), cmd.c_str (), c_info._cmd.size ()))
+                if (0 == c_info._cmd.compare (0, c_info._cmd.size (), cmd.c_str (), c_info._cmd.size ())) {
+                    cmd_len = c_info._cmd.size ();
                     return true;
+                }
+
+                if (0 == c_info._cmd_short.compare (0, c_info._cmd_short.size (), cmd.c_str (), c_info._cmd_short.size ())) {
+                    cmd_len = c_info._cmd_short.size ();
+                    return true;
+                }
 
                 return false;
             });
@@ -149,7 +157,7 @@ exec_cmd (const std::string& cmd)
     if (cmd_info_it == g_command_info_vector.end ())
         return false;
 
-    auto params = cmd.substr (cmd_info_it->_cmd.size ());
+    auto params = cmd.substr (cmd_len);
     ba::trim (params);
 
     cmd_info_it->_handler (params);
@@ -216,6 +224,11 @@ load_bin (
     const bf::path& bin_path (path);
     g_prompt = g_default_prompt;
     g_bin_loaded = false;
+    g_content = "";
+    g_label_vector.clear ();
+    g_logs_path = "";
+    g_bin_name = "";
+    g_bin_path = "";
 
     if (!bf::exists (bin_path)) {
         std::cout << "File not found: " << bin_path.filename () << '\n';
@@ -263,8 +276,6 @@ load_bin (
         label += '@';
         label += line;
         g_label_vector.push_back (label);
-        g_labels += label;
-        g_labels += '\n';
     }
 
     exec_list_labels.wait ();
