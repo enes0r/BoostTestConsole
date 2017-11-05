@@ -23,6 +23,6 @@ Simple tool that is made to ease executing tests built using boost test library 
 
 # Dependencies
 
-* linenoise-ng - Linenoise Next Generation (https://github.com/arangodb/linenoise-ng)
+* linenoise-ng - Linenoise Next Generation, with cosmetic changes (https://github.com/arangodb/linenoise-ng)
 * boost process & filesystem - http://www.boost.org/
 
