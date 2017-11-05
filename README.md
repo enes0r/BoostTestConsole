@@ -11,7 +11,7 @@ Simple tool that is made to ease executing tests built using boost test library 
 # Usage 
 
  * btc.exe [bin_name] - pass test binary as param
- * btc.exe - lounch btc and use '/load [bin_path]' command
+ * btc.exe - launch btc and use '/load [bin_path]' command
  * use /help for printing the help message
 
 #Future work
