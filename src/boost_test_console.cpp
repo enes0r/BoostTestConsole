@@ -202,16 +202,29 @@ cmd_completion_hook (
     linenoiseCompletions* lc)
 {
     std::string p_string (prefix);
-    std::string reg_str = "";
+    std::string reg_shortcut_str = "^\/";
+    bool pop_back = false;
     for (const auto& c : p_string) {
-        reg_str += c;
-        reg_str += ".*";
+        reg_shortcut_str += c;
+        reg_shortcut_str += "[a-z]*-?";
+        pop_back = true;
+    }
+    if (pop_back) {
+        reg_shortcut_str.pop_back ();
+        reg_shortcut_str.pop_back ();
     }
 
+    reg_shortcut_str += "$";
+
+    std::string reg_str = "^\/";
+    reg_str += prefix;
+    reg_str += ".*$";
+
     std::regex reg (reg_str);
+    std::regex reg_sh (reg_shortcut_str);
     for (const auto& cmd_info : g_command_info_vector) {
         const auto& cmd_long = cmd_info._cmd;
-        if (std::regex_match (cmd_long.c_str (), reg))
+        if (std::regex_match (cmd_long.c_str (), reg) || std::regex_match (cmd_long.c_str (), reg_sh))
             linenoiseAddCompletion (lc, cmd_long.c_str ());
     }
 }
