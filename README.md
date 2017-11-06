@@ -14,7 +14,7 @@ Simple tool that is made to ease executing tests built using boost test library 
  * btc.exe - launch btc and use '/load [bin_path]' command
  * use /help for printing the help message
 
-#Future work
+# Future work
 
 * Test execution by test name
 * Setting lounch options
